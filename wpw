@@ -8,4 +8,8 @@ WORDPRESS_DB_USER=wordpress_user
 WORDPRESS_DB_PASSWORD=wordpress_password
 WORDPRESS_DB_NAME=wordpress
 
+ingress:
+  - hostname: website.com
+    path: /wp/*
+    service: http://localhost:<WordPress_Port>
 
