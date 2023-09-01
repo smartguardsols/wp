@@ -1,39 +1,43 @@
 #!/bin/bash
 
+# Run as root
+if [ "$EUID" -ne 0 ]
+  then echo "Please run as root"
+  exit
+fi
+
 # Update package list and install prerequisites
-sudo apt update
-sudo apt install -y curl apt-transport-https ca-certificates software-properties-common unattended-upgrades
+apt update
+apt install -y curl apt-transport-https ca-certificates software-properties-common unattended-upgrades
 
 # Enable automatic updates
-sudo dpkg-reconfigure --priority=low unattended-upgrades
+dpkg-reconfigure --priority=low unattended-upgrades
 
 # Install Docker
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-sudo apt update
-sudo apt install -y docker-ce
-sudo systemctl enable docker
-sudo systemctl start docker
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+apt update
+apt install -y docker-ce
+systemctl enable docker
+systemctl start docker
 
 # Install Docker Compose
-sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
+curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
 
 # Run Portainer
 docker pull portainer/portainer-ce
 docker run -d -p 9000:9000 --name=portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce
 
 # Create a directory to securely store the Cloudflared token
-mkdir -p /run/secrets
-echo "your_token_here" > /run/secrets/cloudflared_token
+mkdir -p /etc/cloudflared
+echo "your_token_here" > /etc/cloudflared/token
 
 # Run Cloudflared from Docker
-docker run -d --name=cloudflared --restart=always -v /run/secrets/cloudflared_token:/etc/cloudflared/token cloudflare/cloudflared:latest tunnel --no-autoupdate run --token /etc/cloudflared/token
+docker run -d --name=cloudflared --restart=always -v /etc/cloudflared/token:/etc/cloudflared/token cloudflare/cloudflared:latest tunnel --no-autoupdate run --token /etc/cloudflared/token
 
 # Clean up
-sudo apt autoremove -y
-sudo apt clean
+apt autoremove -y
+apt clean
 
 echo "Installation completed."
-
-eyJhIjoiYzFlYTk1ZjhhZTA4MTQ5ZmQ3Njc2YTdjNDE0MWM3ZDkiLCJ0IjoiNmEwMWE5NjItYjM3Yy00ZWE1LTlkOTQtZjdiMThlNWUzMTNjIiwicyI6Ik1UVmtZemxrWWpZdFpHRTFPUzAwTldWaUxXSTVOVGt0TmpZeVpHTXdORGhtTXpZMCJ9
