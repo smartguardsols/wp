@@ -35,3 +35,5 @@ sudo apt autoremove -y
 sudo apt clean
 
 echo "Installation completed."
+
+eyJhIjoiYzFlYTk1ZjhhZTA4MTQ5ZmQ3Njc2YTdjNDE0MWM3ZDkiLCJ0IjoiNmEwMWE5NjItYjM3Yy00ZWE1LTlkOTQtZjdiMThlNWUzMTNjIiwicyI6Ik1UVmtZemxrWWpZdFpHRTFPUzAwTldWaUxXSTVOVGt0TmpZeVpHTXdORGhtTXpZMCJ9
